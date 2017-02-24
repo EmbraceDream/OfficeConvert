@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 @WebFilter(filterName = "Servlet3Filter", urlPatterns = "/*")
-public class FilterFileName implements Filter {
+public class EncodingFilter implements Filter {
 
 	protected String encoding = null;
 	protected FilterConfig filterConfig = null;
@@ -36,7 +36,7 @@ public class FilterFileName implements Filter {
 	        request.setCharacterEncoding("UTF-8");
 	        response.setContentType("text/html;charset=UTF-8");
 	      }
-	      /*else if(method.equals("get"))
+	      else if(method.equals("get"))
 	      {
 	        //如果是get方法
 	        request.setCharacterEncoding("UTF-8");
@@ -46,24 +46,25 @@ public class FilterFileName implements Filter {
 	          {
 	            try
 	            {
-	              return new String(super.getParameter(str).getBytes("iso-8859-1"),"GBK");
-	            }
-	            catch(Exception e)
-	            {
-	              return null;
-	            }
-	   
-	          }
-	        };
-	      }*/
-	      
-	      chain.doFilter(request, response);
-	    }
-	    catch(Exception e){}
-	}
+	              return new
+	      String(super.getParameter(str).getBytes("iso-8859-1"),"GBK");
+          }
+          catch(Exception e)
+          {
+            return null;
+          }
+ 
+        }
+      };
+    }
+    
+    chain.doFilter(request, response);
+  }
+  catch(Exception e){}
+}
 
-	public void init(FilterConfig config) throws ServletException {
-		System.out.println("过滤器初始化");
-		
-	}
+public void init(FilterConfig config) throws ServletException {
+	System.out.println("过滤器初始化");
+	
+}
 }

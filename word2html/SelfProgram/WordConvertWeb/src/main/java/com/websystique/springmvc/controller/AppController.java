@@ -2,6 +2,7 @@ package com.websystique.springmvc.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -192,15 +195,8 @@ public class AppController {
 //        response.setContentLength(document.getContent().length);
 //        response.setHeader("Content-Disposition","attachment; filename=\"" + document.getName() +"\"");
 
-        // 获得文件名：  
-        String documentName = document.getName();
-        String realFileName = new String(documentName.getBytes(),"UTF-8");
-        String realFileName2 = new String(documentName.getBytes("ISO-8859-1"),"ISO-8859-1");
-        String realFileName3 = new String(documentName.getBytes("ISO-8859-1"),"UTF-8");
-        String realFileName4 = new String(documentName.getBytes("UTF-8"),"ISO-8859-1");
-        String realFileName5 = new String(documentName.getBytes("iso-8859-1"),"GBK");
-        
-//		String realFileName = document.getName();
+        // 获得文件名:        
+		String realFileName = document.getName();
         // 获取路径  
         String ctxPath = request.getSession().getServletContext().getRealPath(  
                 "/")  
@@ -210,10 +206,27 @@ public class AppController {
         {
         	fileUpLoadDir.mkdirs();
         }
-        File uploadFile = new File(ctxPath + realFileName); 
-        FileCopyUtils.copy(document.getContent(), uploadFile);
- 
- 		return "redirect:/add-document-"+userId;
+        //File uploadFileDir = new File(ctxPath);
+        File uploadFile = new File(ctxPath + realFileName);
+        if(!uploadFile.exists())
+        {
+        	System.out.println("word file does not exist");
+        	FileCopyUtils.copy(document.getContent(), uploadFile);
+        }
+        String jspFileName = uploadFile.getAbsolutePath().replace(".docx", ".jsp");
+        if(new File(jspFileName).exists() == false){
+        	System.out.println("html file does not exist");
+        	String command = "soffice --headless --invisible --convert-to html:\"XHTML Writer File\" " + uploadFile.getAbsolutePath() + " --outdir " + ctxPath;
+        	runSystemCmd(command);
+        	File htmlFileName = new File( jspFileName.replace(".jsp", ".html") );
+        	htmlFileName.renameTo(new File(jspFileName));
+        	
+            Document doc = Jsoup.parse(new File(jspFileName), "UTF-8");
+            System.out.println(doc.head());
+        	
+        } 
+ 		//return "redirect:/add-document-"+userId;
+        return "fileUpLoad/" + realFileName.replace(".docx", "");
 	}
 
 	@RequestMapping(value = { "/delete-document-{userId}-{docId}" }, method = RequestMethod.GET)
@@ -264,6 +277,24 @@ public class AppController {
 		System.out.println(document.toString());
 		
 		userDocumentService.saveDocument(document);
+	}
+	
+	private void runSystemCmd(String command){
+		System.out.println(command);
+		String[] cmds = {"/bin/sh", "-c", command};
+        Runtime run = Runtime.getRuntime();
+        try {
+            // run.exec("cmd /k shutdown -s -t 3600");
+            Process process = run.exec(cmds);
+            InputStream in = process.getInputStream();
+            while (in.read() != -1) {
+                System.out.println(in.read());
+            }
+            in.close();
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }		
 	}
 	
 }
