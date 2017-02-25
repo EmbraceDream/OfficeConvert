@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -26,15 +27,16 @@ public class User {
 	private String ssoId;
 	
 	@NotEmpty
-	@Column(name="FIRST_NAME", nullable=false)
-	private String firstName;
+	@Column(name="NAME", nullable=false)
+	private String name;
 
 	@NotEmpty
-	@Column(name="LAST_NAME", nullable=false)
-	private String lastName;
+	@Column(name="PASSWORD", nullable=false)
+	private String password;
 
 	@NotEmpty
 	@Column(name="EMAIL", nullable=false)
+	@Pattern(regexp="^[0-9a-zA-Z]{1,}@[0-9a-zA-Z]{1,}\\.(com|cn)$")
 	private String email;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -56,20 +58,20 @@ public class User {
 		this.ssoId = ssoId;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getEmail() {
@@ -122,7 +124,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", ssoId=" + ssoId + ", firstName=" + firstName + ", lastName=" + lastName
+		return "User [id=" + id + ", ssoId=" + ssoId + ", name=" + name + ", password=" + password
 				+ ", email=" + email + "]";
 	}
 

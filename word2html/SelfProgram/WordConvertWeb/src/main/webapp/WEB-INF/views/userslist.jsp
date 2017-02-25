@@ -5,7 +5,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<title>Users List</title>
+	<title>用户列表</title>
 	<link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
 	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
 </head>
@@ -19,9 +19,9 @@
 				<table class="table table-hover">
 		    		<thead>
 			      		<tr>
-					        <th>First Name</th>
-					        <th>Last Name</th>
-					        <th>Email</th>
+					        <th>用户名</th>
+					        <th>密码</th>
+					        <th>邮箱</th>
 					        <th>SSO ID</th>
 					        <th width="100"></th>
 					        <th width="100"></th>
@@ -30,8 +30,8 @@
 		    		<tbody>
 					<c:forEach items="${users}" var="user">
 						<tr>
-							<td>${user.firstName}</td>
-							<td>${user.lastName}</td>
+							<td>${user.name}</td>
+							<td>${user.password}</td>
 							<td>${user.email}</td>
 							<td>${user.ssoId}</td>
 							<td><a href="<c:url value='/edit-user-${user.ssoId}' />" class="btn btn-success custom-width">edit</a></td>
@@ -43,7 +43,7 @@
 		    </div>
 		</div>
 	 	<div class="well">
-	 		<a href="<c:url value='/newuser' />">Add New User</a>
+	 		<a href="<c:url value='/newuser' />">增加新用户</a>
 	 	</div>
    	</div>
 </body>

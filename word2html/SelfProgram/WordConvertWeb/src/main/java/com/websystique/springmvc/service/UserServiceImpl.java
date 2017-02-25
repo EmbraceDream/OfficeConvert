@@ -25,6 +25,11 @@ public class UserServiceImpl implements UserService{
 		User user = dao.findBySSO(sso);
 		return user;
 	}
+	
+	public User findByName(String name) {
+		User user = dao.findByName(name);
+		return user;
+	}
 
 	public void saveUser(User user) {
 		dao.save(user);
@@ -39,8 +44,8 @@ public class UserServiceImpl implements UserService{
 		User entity = dao.findById(user.getId());
 		if(entity!=null){
 			entity.setSsoId(user.getSsoId());
-			entity.setFirstName(user.getFirstName());
-			entity.setLastName(user.getLastName());
+			entity.setName(user.getName());
+			entity.setPassword(user.getPassword());
 			entity.setEmail(user.getEmail());
 			entity.setUserDocuments(user.getUserDocuments());
 		}

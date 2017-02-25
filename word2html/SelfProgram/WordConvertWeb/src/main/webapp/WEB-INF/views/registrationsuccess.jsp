@@ -17,10 +17,10 @@
 		</div>
 		
 		<span class="well pull-left">
-			<a href="<c:url value='/add-document-${user.id}' />">Click here to upload/manage your documents</a>	
+			<a href="<c:url value='/add-document-${user.id}' />">单击以上传/管理您的文档</a>	
 		</span>
 		<span class="well pull-right">
-			Go to <a href="<c:url value='/list' />">Users List</a>
+			Go to <a href="<c:url value='/list' />">用户列表</a>
 		</span>
 	</div>
 </body>

@@ -21,11 +21,11 @@
 		
 		<div class="row">
 			<div class="form-group col-md-12">
-				<label class="col-md-3 control-lable" for="firstName">用户名</label>
+				<label class="col-md-3 control-lable" for="name">用户名</label>
 				<div class="col-md-7">
-					<form:input type="text" path="firstName" id="firstName" class="form-control input-sm"/>
+					<form:input type="text" path="name" id="name" class="form-control input-sm"/>
 					<div class="has-error">
-						<form:errors path="firstName" class="help-inline"/>
+						<form:errors path="name" class="help-inline"/>
 					</div>
 				</div>
 			</div>
@@ -33,14 +33,14 @@
 
 		<div class="row">
 			<div class="form-group col-md-12">
-				<label class="col-md-3 control-lable" for="lastName">Last Name</label>
+				<label class="col-md-3 control-lable" for="password">密码</label>
 				<div class="col-md-7">
-					<form:input type="text" path="lastName" id="lastName" class="form-control input-sm" />
+					<form:input type="text" path="password" id="password" class="form-control input-sm" />
 					<div class="has-error">
-						<form:errors path="lastName" class="help-inline"/>
+						<form:errors path="password" class="help-inline"/>
 					</div>
 				</div>
-			</div>
+			</div>			
 		</div>
 
 		<div class="row">
@@ -64,7 +64,7 @@
 
 		<div class="row">
 			<div class="form-group col-md-12">
-				<label class="col-md-3 control-lable" for="email">Email</label>
+				<label class="col-md-3 control-lable" for="email">邮箱</label>
 				<div class="col-md-7">
 					<form:input type="text" path="email" id="email" class="form-control input-sm" />
 					<div class="has-error">
@@ -89,7 +89,7 @@
 		
 		<c:if test="${edit}">
 			<span class="well pull-left">
-				<a href="<c:url value='/add-document-${user.id}' />">Click here to upload/manage your documents</a>	
+				<a href="<c:url value='/add-document-${user.id}' />">单击以上传/管理您的文档</a>	
 			</span>
 		</c:if>
 		

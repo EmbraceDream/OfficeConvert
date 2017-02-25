@@ -11,6 +11,8 @@ public interface UserDao {
 	
 	User findBySSO(String sso);
 	
+	User findByName(String name);
+	
 	void save(User user);
 	
 	void deleteBySSO(String sso);

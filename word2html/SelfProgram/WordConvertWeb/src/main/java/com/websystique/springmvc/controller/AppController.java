@@ -58,9 +58,41 @@ public class AppController {
 	}
 	
 	/**
+	 * This method is login page.
+	 */
+	@RequestMapping(value = {"/","/login"}, method = RequestMethod.GET)
+	public String usrLogin(ModelMap model) {
+		User user = new User();
+		model.addAttribute("user", user);
+		model.addAttribute("edit", false);
+		return "login";
+	}
+	
+	@RequestMapping(value = {"/","/login"}, method = RequestMethod.POST)
+	public String usrLoginCheck(@Valid User user, BindingResult result, ModelMap model) {
+		if (result.hasErrors()) {
+			return "login";
+		}
+		else
+		{
+			User storedUser = userService.findByName(user.getName());
+			if(storedUser.getPassword().equals( user.getPassword()) )
+			{
+				return "redirect:/add-document-"+user.getSsoId();
+			}
+			else
+			{
+				System.out.println("密码错误");
+				model.addAttribute("wrongPassword", true);
+				return "login";
+			}
+		}		
+	}
+	
+	/**
 	 * This method will list all existing users.
 	 */
-	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = {"/list" }, method = RequestMethod.GET)
 	public String listUsers(ModelMap model) {
 
 		List<User> users = userService.findAllUsers();
@@ -111,7 +143,7 @@ public class AppController {
 		userService.saveUser(user);
 		
 		model.addAttribute("user", user);
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
+		model.addAttribute("success", "用户 " + user.getName() + " "+ user.getPassword() + " 注册成功");
 		//return "success";
 		return "registrationsuccess";
 	}
@@ -142,7 +174,7 @@ public class AppController {
 
 		userService.updateUser(user);
 
-		model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
+		model.addAttribute("success", "用户 " + user.getName() + " "+ user.getPassword() + " 更新成功");
 		return "registrationsuccess";
 	}
 
