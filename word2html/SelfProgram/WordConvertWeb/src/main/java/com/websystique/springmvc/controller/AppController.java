@@ -3,6 +3,7 @@ package com.websystique.springmvc.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
 
@@ -189,7 +190,7 @@ public class AppController {
 	}
 	
 	@RequestMapping(value = { "/view-document-{userId}-{docId}" }, method = RequestMethod.GET)
-	public String viewDocument(@PathVariable int userId, @PathVariable int docId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void viewDocument(@PathVariable int userId, @PathVariable int docId, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		UserDocument document = userDocumentService.findById(docId);
 //		response.setContentType(document.getType());
 //        response.setContentLength(document.getContent().length);
@@ -213,20 +214,31 @@ public class AppController {
         	System.out.println("word file does not exist");
         	FileCopyUtils.copy(document.getContent(), uploadFile);
         }
-        String jspFileName = uploadFile.getAbsolutePath().replace(".docx", ".jsp");
+        String htmlFileName = uploadFile.getAbsolutePath().replace(".docx", ".html");
+        File htmlFile = new File(htmlFileName);
+        if(htmlFile.exists() == false){
+        	System.out.println("html file does not exist");
+        	String command = "soffice --headless --invisible --convert-to html:\"XHTML Writer File\" " + uploadFile.getAbsolutePath() + " --outdir " + ctxPath;
+        	runSystemCmd(command);      	        	
+        } 
+        
+        Document doc = Jsoup.parse(htmlFile, "UTF-8");
+        generateHtmlFormDoc(response, doc);
+        
+/*        String jspFileName = uploadFile.getAbsolutePath().replace(".docx", ".jsp");
         if(new File(jspFileName).exists() == false){
         	System.out.println("html file does not exist");
         	String command = "soffice --headless --invisible --convert-to html:\"XHTML Writer File\" " + uploadFile.getAbsolutePath() + " --outdir " + ctxPath;
         	runSystemCmd(command);
         	File htmlFileName = new File( jspFileName.replace(".jsp", ".html") );
-        	htmlFileName.renameTo(new File(jspFileName));
-        	
-            Document doc = Jsoup.parse(new File(jspFileName), "UTF-8");
-            System.out.println(doc.head());
-        	
+        	htmlFileName.renameTo(new File(jspFileName));      	        	
         } 
+        
+        Document doc = Jsoup.parse(new File(jspFileName), "UTF-8");
+        System.out.println(doc.head());
+        generateHtmlFormDoc(response, doc);*/
  		//return "redirect:/add-document-"+userId;
-        return "fileUpLoad/" + realFileName.replace(".docx", "");
+        //return "fileUpLoad/" + realFileName.replace(".docx", "");
 	}
 
 	@RequestMapping(value = { "/delete-document-{userId}-{docId}" }, method = RequestMethod.GET)
@@ -273,8 +285,8 @@ public class AppController {
 		document.setContent(multipartFile.getBytes());
 		document.setUser(user);
 		
-		System.out.println("*********************************************");
-		System.out.println(document.toString());
+//		System.out.println("*********************************************");
+//		System.out.println(document.toString());
 		
 		userDocumentService.saveDocument(document);
 	}
@@ -295,6 +307,24 @@ public class AppController {
         } catch (Exception e) {
             e.printStackTrace();
         }		
+	}
+	
+	private void generateHtmlFormDoc(HttpServletResponse response, Document doc) throws IOException{
+		response.setContentType("text/html");  
+		response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();  
+        out.println("<html>");
+        out.println(doc.head());
+        out.println(doc.body());
+        out.println("</html>");
+        /*out.println("<html>");  
+        out.println("<head>");  
+        out.println("<title>你好</title>");  
+        out.println("</head>");  
+        out.println("<body>");  
+        out.println("<h1>周末!</h1>");  
+        out.println("</body>");  
+        out.println("</html>");  */
 	}
 	
 }
