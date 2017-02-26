@@ -42,8 +42,32 @@
 				</div>
 			</div>			
 		</div>
-
+		
+		<%-- <div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="passwordConfirm">再次输入密码</label>
+				<div class="col-md-7">
+					<form:input type="text" path="passwordConfirm" id="passwordConfirm" class="form-control input-sm" />
+					<div class="has-error">
+						<form:errors path="passwordConfirm" class="help-inline"/>
+					</div>
+				</div>
+			</div>			
+		</div> --%>
+		
 		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="passwordConfirm">再次输入密码</label>
+				<div class="col-md-7">
+					<form:input type="text" path="passwordConfirm" id="passwordConfirm" class="form-control input-sm" />
+					<div class="has-error">
+						<form:errors path="passwordConfirm" class="help-inline"/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+<%-- 		<div class="row">
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="ssoId">SSO ID</label>
 				<div class="col-md-7">
@@ -60,7 +84,7 @@
 					</c:choose>
 				</div>
 			</div>
-		</div>
+		</div> --%>
 
 		<div class="row">
 			<div class="form-group col-md-12">
@@ -78,10 +102,10 @@
 			<div class="form-actions floatRight">
 				<c:choose>
 					<c:when test="${edit}">
-						<input type="submit" value="Update" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/list' />">Cancel</a>
+						<input type="submit" value="修改" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/list' />">取消</a>
 					</c:when>
 					<c:otherwise>
-						<input type="submit" value="Register" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/list' />">Cancel</a>
+						<input type="submit" value="注册" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/list' />">取消</a>
 					</c:otherwise>
 				</c:choose>
 			</div>

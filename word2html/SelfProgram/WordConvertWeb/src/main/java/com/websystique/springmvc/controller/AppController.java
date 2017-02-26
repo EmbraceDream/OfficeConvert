@@ -70,20 +70,32 @@ public class AppController {
 	
 	@RequestMapping(value = {"/","/login"}, method = RequestMethod.POST)
 	public String usrLoginCheck(@Valid User user, BindingResult result, ModelMap model) {
-		if (result.hasErrors()) {
+		System.out.println(user.toString());
+		if (result.hasFieldErrors("name") || result.hasFieldErrors("password")) {
 			return "login";
-		}
+		}		
 		else
 		{
 			User storedUser = userService.findByName(user.getName());
-			if(storedUser.getPassword().equals( user.getPassword()) )
+			if(storedUser != null && storedUser.getPassword().equals( user.getPassword()) )
 			{
-				return "redirect:/add-document-"+user.getSsoId();
+				//return "redirect:/add-document-"+user.getSsoId();
+				return "redirect:/add-document-"+user.getId();
 			}
 			else
 			{
-				System.out.println("密码错误");
-				model.addAttribute("wrongPassword", true);
+				if(storedUser == null){
+					System.out.println("用户名不存在");
+					FieldError nonNameError = new FieldError("user","name",messageSource.getMessage("non.exist.name", null, Locale.getDefault()));
+					result.addError(nonNameError);
+				}
+				else
+				{
+					System.out.println("密码错误");
+//					model.addAttribute("wrongPassword", true);
+					FieldError incorrectPasswordError = new FieldError("user","password",messageSource.getMessage("non.correct.password", null, Locale.getDefault()));
+					result.addError(incorrectPasswordError);
+				}				
 				return "login";
 			}
 		}		
@@ -119,6 +131,7 @@ public class AppController {
 	public String saveUser(@Valid User user, BindingResult result,
 			ModelMap model) {
 
+		System.out.println(user.toString());
 		if (result.hasErrors()) {
 			return "registration";
 		}
@@ -131,9 +144,26 @@ public class AppController {
 		 * framework as well while still using internationalized messages.
 		 * 
 		 */
-		if(!userService.isUserSSOUnique(user.getId(), user.getSsoId())){
+		/*if(!userService.isUserSSOUnique(user.getId(), user.getSsoId())){
 			FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
 		    result.addError(ssoError);
+			return "registration";
+		}*/
+		boolean userNameUnique = true;
+		boolean passwordConfirmRight = true;
+		if(!userService.isUserNameUnique(user.getName())){
+			FieldError nameError =new FieldError("user","name",messageSource.getMessage("non.unique.name", new String[]{user.getName()}, Locale.getDefault()));
+		    result.addError(nameError);
+		    userNameUnique = false;
+		}
+		if(user.getPassword().equals(user.getPasswordConfirm()) == false)
+		{
+			FieldError passwordConfirmError = new FieldError("user","passwordConfirm",messageSource.getMessage("non.equal.passwordConfirm", null, Locale.getDefault()));
+			result.addError(passwordConfirmError);
+			passwordConfirmRight = false;
+		}
+		if( !userNameUnique || !passwordConfirmRight )
+		{
 			return "registration";
 		}
 		

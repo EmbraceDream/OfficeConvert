@@ -41,16 +41,16 @@
 					</div>
 				</div>
 			</div>
-			<c:if test="${wrongPassword}">
+			<%-- <c:if test="${wrongPassword}">
 				<div>				
 					<span class="well pull-left">
 						<label>密码错误</label>	
 					</span>
 				</div>
-			</c:if>
+			</c:if> --%>
 		</div>
 
-		<div class="row">
+		<%-- <div class="row">
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="ssoId">SSO ID</label>
 				<div class="col-md-7">
@@ -67,7 +67,7 @@
 					</c:choose>
 				</div>
 			</div>
-		</div>
+		</div> --%>
 
 		<div class="row">
 			<div class="form-group col-md-12">
@@ -83,7 +83,7 @@
 
 		<div class="row">
 			<div class="form-actions floatRight">
-				<input type="submit" value="Login" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/newuser' />">注册</a>
+				<input type="submit" value="登录" class="btn btn-primary btn-sm"/> or <a href="<c:url value='/newuser' />">注册</a>
 			</div>
 		</div>		
 	</form:form>

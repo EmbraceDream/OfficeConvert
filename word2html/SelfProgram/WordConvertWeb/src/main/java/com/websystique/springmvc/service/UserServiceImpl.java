@@ -43,9 +43,10 @@ public class UserServiceImpl implements UserService{
 	public void updateUser(User user) {
 		User entity = dao.findById(user.getId());
 		if(entity!=null){
-			entity.setSsoId(user.getSsoId());
+//			entity.setSsoId(user.getSsoId());
 			entity.setName(user.getName());
 			entity.setPassword(user.getPassword());
+			entity.setPasswordConfirm(user.getPasswordConfirm());
 			entity.setEmail(user.getEmail());
 			entity.setUserDocuments(user.getUserDocuments());
 		}
@@ -63,6 +64,11 @@ public class UserServiceImpl implements UserService{
 	public boolean isUserSSOUnique(Integer id, String sso) {
 		User user = findBySSO(sso);
 		return ( user == null || ((id != null) && (user.getId() == id)));
+	}
+	
+	public boolean isUserNameUnique(String name) {
+		User user = findByName(name);
+		return ( user == null );
 	}
 	
 }

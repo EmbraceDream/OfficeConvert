@@ -22,17 +22,21 @@ public class User {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	@NotEmpty
+/*	@NotEmpty
 	@Column(name="SSO_ID", unique=true, nullable=false)
-	private String ssoId;
+	private String ssoId;*/
 	
 	@NotEmpty
-	@Column(name="NAME", nullable=false)
+	@Column(name="NAME", unique=true, nullable=false)
 	private String name;
 
 	@NotEmpty
 	@Column(name="PASSWORD", nullable=false)
 	private String password;
+	
+	@NotEmpty
+	@Column(name="PASSWORDCONFIRM", nullable=false)
+	private String passwordConfirm;
 
 	@NotEmpty
 	@Column(name="EMAIL", nullable=false)
@@ -50,13 +54,13 @@ public class User {
 		this.id = id;
 	}
 
-	public String getSsoId() {
+/*	public String getSsoId() {
 		return ssoId;
 	}
 
 	public void setSsoId(String ssoId) {
 		this.ssoId = ssoId;
-	}
+	}*/
 
 	public String getName() {
 		return name;
@@ -72,6 +76,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getPasswordConfirm() {
+		return passwordConfirm;
+	}
+
+	public void setPasswordConfirm(String passwordConfirm) {
+		this.passwordConfirm = passwordConfirm;
 	}
 
 	public String getEmail() {
@@ -96,7 +108,7 @@ public class User {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((ssoId == null) ? 0 : ssoId.hashCode());
+//		result = prime * result + ((ssoId == null) ? 0 : ssoId.hashCode());
 		return result;
 	}
 
@@ -114,17 +126,20 @@ public class User {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (ssoId == null) {
+/*		if (ssoId == null) {
 			if (other.ssoId != null)
 				return false;
 		} else if (!ssoId.equals(other.ssoId))
-			return false;
+			return false;*/
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", ssoId=" + ssoId + ", name=" + name + ", password=" + password
+		/*return "User [id=" + id + ", ssoId=" + ssoId + ", name=" + name + ", password=" + password
+				+ ", email=" + email + "]";*/
+		return "User [id=" + id + ", name=" + name + ", password=" + password
+				+ ", passwordConfirm=" + passwordConfirm
 				+ ", email=" + email + "]";
 	}
 
