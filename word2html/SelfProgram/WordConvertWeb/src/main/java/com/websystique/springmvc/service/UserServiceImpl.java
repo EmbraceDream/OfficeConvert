@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService{
 			entity.setPassword(user.getPassword());
 			entity.setPasswordConfirm(user.getPasswordConfirm());
 			entity.setEmail(user.getEmail());
+			entity.setIsadmin(user.getIsadmin());
 			entity.setUserDocuments(user.getUserDocuments());
 		}
 	}
@@ -69,6 +70,15 @@ public class UserServiceImpl implements UserService{
 	public boolean isUserNameUnique(String name) {
 		User user = findByName(name);
 		return ( user == null );
+	}
+
+	public boolean isUserAdmin(String name) {
+		// TODO Auto-generated method stub
+		User user = findByName(name);
+		if(user.getIsadmin())
+			return true;
+		else
+			return false;
 	}
 	
 }

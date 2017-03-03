@@ -42,6 +42,9 @@ public class User {
 	@Column(name="EMAIL", nullable=false)
 	@Pattern(regexp="^[0-9a-zA-Z]{1,}@[0-9a-zA-Z]{1,}\\.(com|cn)$")
 	private String email;
+	
+	@Column(name="ISADMIN", nullable=false)
+	private boolean isadmin;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserDocument> userDocuments = new HashSet<UserDocument>();
@@ -92,6 +95,14 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public boolean getIsadmin(){
+		return isadmin;
+	}
+	
+	public void setIsadmin(boolean isadmin){
+		this.isadmin = isadmin;
 	}
 
 	public Set<UserDocument> getUserDocuments() {

@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.jsoup.Jsoup;
@@ -69,8 +70,13 @@ public class AppController {
 	}
 	
 	@RequestMapping(value = {"/","/login"}, method = RequestMethod.POST)
-	public String usrLoginCheck(@Valid User user, BindingResult result, ModelMap model) {
+	public String usrLoginCheck(HttpSession session, @Valid User user, BindingResult result, ModelMap model) {
 		System.out.println(user.toString());
+		/*if(checkUserLoginInput(user, result, model))
+			return "redirect:/add-document-"+ user.getId();
+		else
+			return "login";*/
+		
 		if (result.hasFieldErrors("name") || result.hasFieldErrors("password")) {
 			return "login";
 		}		
@@ -79,8 +85,13 @@ public class AppController {
 			User storedUser = userService.findByName(user.getName());
 			if(storedUser != null && storedUser.getPassword().equals( user.getPassword()) )
 			{
-				//return "redirect:/add-document-"+user.getSsoId();
-				return "redirect:/add-document-"+user.getId();
+				//return "redirect:/add-document-"+user.getSsoId();	
+				session.setAttribute("username", user.getName());
+				session.setAttribute("userid", user.getId());
+				if(userService.isUserAdmin(user.getName())){
+					session.setAttribute("useradmin", true);
+				}
+				return "redirect:/add-document-"+storedUser.getId();
 			}
 			else
 			{
@@ -101,6 +112,12 @@ public class AppController {
 		}		
 	}
 	
+	
+	@RequestMapping(value = {"/logout"}, method = RequestMethod.GET)
+	public String usrLogout(HttpSession session,  ModelMap model) {
+		session.removeAttribute("username");
+		return "redirect:/login";
+	}
 	/**
 	 * This method will list all existing users.
 	 */
@@ -176,17 +193,35 @@ public class AppController {
 		model.addAttribute("success", "用户 " + user.getName() + " "+ user.getPassword() + " 注册成功");
 		//return "success";
 		return "registrationsuccess";
+		
+		/*if(checkUserRegisterUpdateInput(user, result, model))
+		{
+			userService.saveUser(user);
+			
+			model.addAttribute("user", user);
+			model.addAttribute("success", "用户 " + user.getName() + " "+ user.getPassword() + " 注册成功");
+			//return "success";
+			return "registrationsuccess";
+		}
+		else
+		{
+			return "registration";
+		}*/
 	}
 
 
 	/**
 	 * This method will provide the medium to update an existing user.
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.GET)
-	public String editUser(@PathVariable String ssoId, ModelMap model) {
-		User user = userService.findBySSO(ssoId);
+	@RequestMapping(value = { "/edit-user-{id}" }, method = RequestMethod.GET)
+	public String editUser(@PathVariable int id, ModelMap model, HttpSession session) {
+		User user = userService.findById(id);
 		model.addAttribute("user", user);
 		model.addAttribute("edit", true);
+		if((Boolean) session.getAttribute("useradmin"))
+			model.addAttribute("admin", true);
+		else
+			model.addAttribute("admin", false);
 		return "registration";
 	}
 	
@@ -194,14 +229,31 @@ public class AppController {
 	 * This method will be called on form submission, handling POST request for
 	 * updating user in database. It also validates the user input
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/edit-user-{id}" }, method = RequestMethod.POST)
 	public String updateUser(@Valid User user, BindingResult result,
-			ModelMap model, @PathVariable String ssoId) {
+			ModelMap model, HttpSession session) {
 
-		if (result.hasErrors()) {
+		if (result.hasErrors()){
+			model.addAttribute("edit", true);
+			if((Boolean) session.getAttribute("useradmin"))
+				model.addAttribute("admin", true);
+			else
+				model.addAttribute("admin", false);
 			return "registration";
 		}
-
+		
+		if(user.getPassword().equals(user.getPasswordConfirm()) == false)
+		{
+			model.addAttribute("edit", true);
+			if((Boolean) session.getAttribute("useradmin"))
+				model.addAttribute("admin", true);
+			else
+				model.addAttribute("admin", false);
+			FieldError passwordConfirmError = new FieldError("user","passwordConfirm",messageSource.getMessage("non.equal.passwordConfirm", null, Locale.getDefault()));
+			result.addError(passwordConfirmError);
+			return "registration";
+		}		
+		
 		userService.updateUser(user);
 
 		model.addAttribute("success", "用户 " + user.getName() + " "+ user.getPassword() + " 更新成功");
@@ -228,8 +280,14 @@ public class AppController {
 		FileBucket fileModel = new FileBucket();
 		model.addAttribute("fileBucket", fileModel);
 
-		List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
+		//List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
+		List<UserDocument> documents = userDocumentService.findAll();
 		model.addAttribute("documents", documents);
+		
+		if(userService.isUserAdmin(user.getName()))
+			model.addAttribute("admin", true);
+		else
+			model.addAttribute("admin", false);
 		
 		for(UserDocument doc : documents){
 			System.out.println(doc.toString());
@@ -312,12 +370,15 @@ public class AppController {
 	@RequestMapping(value = { "/add-document-{userId}" }, method = RequestMethod.POST)
 	public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable int userId) throws IOException{
 		
+		System.out.println("file upload starting");
+		
 		if (result.hasErrors()) {
 			System.out.println("validation errors");
 			User user = userService.findById(userId);
 			model.addAttribute("user", user);
 
-			List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
+			//List<UserDocument> documents = userDocumentService.findAllByUserId(userId);
+			List<UserDocument> documents = userDocumentService.findAll();
 			model.addAttribute("documents", documents);
 			
 			return "managedocuments";
@@ -326,7 +387,7 @@ public class AppController {
 			System.out.println("Fetching file");
 			
 			User user = userService.findById(userId);
-			model.addAttribute("user", user);
+			model.addAttribute("user", user);	
 
 			saveDocument(fileBucket, user);
 
@@ -347,8 +408,8 @@ public class AppController {
 		document.setContent(multipartFile.getBytes());
 		document.setUser(user);
 		
-//		System.out.println("*********************************************");
-//		System.out.println(document.toString());
+		System.out.println("*********************************************");
+		System.out.println(document.toString());
 		
 		userDocumentService.saveDocument(document);
 	}
@@ -388,5 +449,58 @@ public class AppController {
         out.println("</body>");  
         out.println("</html>");  */
 	}
+	
+	/*private boolean checkUserLoginInput(User user, BindingResult result, ModelMap model){
+		if (result.hasFieldErrors("name") || result.hasFieldErrors("password")) {
+			return false;
+		}		
+		else
+		{
+			User storedUser = userService.findByName(user.getName());
+			if(storedUser != null && storedUser.getPassword().equals( user.getPassword()) )
+			{
+				//return "redirect:/add-document-"+user.getSsoId();	
+				user.setId(storedUser.getId());
+				return true;
+			}
+			else
+			{
+				if(storedUser == null){
+					System.out.println("用户名不存在");
+					FieldError nonNameError = new FieldError("user","name",messageSource.getMessage("non.exist.name", null, Locale.getDefault()));
+					result.addError(nonNameError);
+				}
+				else
+				{
+					System.out.println("密码错误");
+//					model.addAttribute("wrongPassword", true);
+					FieldError incorrectPasswordError = new FieldError("user","password",messageSource.getMessage("non.correct.password", null, Locale.getDefault()));
+					result.addError(incorrectPasswordError);
+				}				
+				return false;
+			}
+		}
+	}
+	
+	private boolean checkUserRegisterUpdateInput(User user, BindingResult result, ModelMap model){
+		boolean userNameUnique = true;
+		boolean passwordConfirmRight = true;
+		if(!userService.isUserNameUnique(user.getName())){
+			FieldError nameError =new FieldError("user","name",messageSource.getMessage("non.unique.name", new String[]{user.getName()}, Locale.getDefault()));
+		    result.addError(nameError);
+		    userNameUnique = false;
+		}
+		if(user.getPassword().equals(user.getPasswordConfirm()) == false)
+		{
+			FieldError passwordConfirmError = new FieldError("user","passwordConfirm",messageSource.getMessage("non.equal.passwordConfirm", null, Locale.getDefault()));
+			result.addError(passwordConfirmError);
+			passwordConfirmRight = false;
+		}
+		if( !userNameUnique || !passwordConfirmRight )
+		{
+			return false;
+		}
+		return true;
+	}*/
 	
 }

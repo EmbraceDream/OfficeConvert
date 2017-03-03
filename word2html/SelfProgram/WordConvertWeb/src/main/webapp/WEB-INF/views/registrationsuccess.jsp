@@ -19,9 +19,11 @@
 		<span class="well pull-left">
 			<a href="<c:url value='/add-document-${user.id}' />">单击以上传/管理您的文档</a>	
 		</span>
-		<span class="well pull-right">
-			Go to <a href="<c:url value='/list' />">用户列表</a>
-		</span>
+		<c:if test="${isadmin}">
+			<span class="well pull-right">
+				Go to <a href="<c:url value='/list' />">用户列表</a>
+			</span>
+		</c:if>
 	</div>
 </body>
 

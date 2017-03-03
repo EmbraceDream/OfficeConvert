@@ -24,5 +24,7 @@ public interface UserService {
 	boolean isUserSSOUnique(Integer id, String sso);
 	
 	boolean isUserNameUnique(String name);
+	
+	boolean isUserAdmin(String name);
 
 }

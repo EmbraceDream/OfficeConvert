@@ -19,7 +19,7 @@
  	<form:form method="POST" modelAttribute="user" class="form-horizontal">
 		<form:input type="hidden" path="id" id="id"/>
 		
-		<div class="row">
+		<%-- <div class="row">
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="name">用户名</label>
 				<div class="col-md-7">
@@ -28,6 +28,38 @@
 						<form:errors path="name" class="help-inline"/>
 					</div>
 				</div>
+				<div class="col-md-7">
+					<c:choose>
+						<c:when test="${edit}">
+							<form:input type="text" path="name" id="name" class="form-control input-sm" disabled="true"/>
+						</c:when>
+						<c:otherwise>
+							<form:input type="text" path="name" id="name" class="form-control input-sm"/>
+							<div class="has-error">
+								<form:errors path="name" class="help-inline"/>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</div>
+		</div> --%>
+		
+		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="name">用户名</label>
+				<div class="col-md-7">
+					<c:choose>
+						<c:when test="${edit}">
+							<form:input type="text" path="name" id="name" class="form-control input-sm" readonly="true" />
+						</c:when>
+						<c:otherwise>
+							<form:input type="text" path="name" id="name" class="form-control input-sm" />
+							<div class="has-error">
+								<form:errors path="name" class="help-inline"/>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 		</div>
 
@@ -35,7 +67,7 @@
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="password">密码</label>
 				<div class="col-md-7">
-					<form:input type="text" path="password" id="password" class="form-control input-sm" />
+					<form:password path="password" id="password" class="form-control input-sm" />
 					<div class="has-error">
 						<form:errors path="password" class="help-inline"/>
 					</div>
@@ -59,7 +91,7 @@
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="passwordConfirm">再次输入密码</label>
 				<div class="col-md-7">
-					<form:input type="text" path="passwordConfirm" id="passwordConfirm" class="form-control input-sm" />
+					<form:password path="passwordConfirm" id="passwordConfirm" class="form-control input-sm" />
 					<div class="has-error">
 						<form:errors path="passwordConfirm" class="help-inline"/>
 					</div>
@@ -90,13 +122,27 @@
 			<div class="form-group col-md-12">
 				<label class="col-md-3 control-lable" for="email">邮箱</label>
 				<div class="col-md-7">
-					<form:input type="text" path="email" id="email" class="form-control input-sm" />
+					<form:input type="text" path="email" id="email" class="form-control input-sm"/>
 					<div class="has-error">
 						<form:errors path="email" class="help-inline"/>
 					</div>
 				</div>
 			</div>
 		</div>
+		
+		<c:if test="${admin}">
+			<div class="row">
+				<div class="form-group col-md-12">
+					<label class="col-md-3 control-lable" for="isadmin">设置为管理员</label>
+					<div class="col-md-2">
+						<form:checkbox value="true" checked="false" path="isadmin" id="isadmin" class="form-control input-sm"/>
+						<div class="has-error">
+							<form:errors path="isadmin" class="help-inline"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</c:if>
 
 		<div class="row">
 			<div class="form-actions floatRight">

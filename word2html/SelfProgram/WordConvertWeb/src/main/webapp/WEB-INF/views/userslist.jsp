@@ -34,8 +34,8 @@
 							<td>${user.password}</td>
 							<td>${user.email}</td>
 							<td>${user.id}</td>
-							<td><a href="<c:url value='/edit-user-${user.id}' />" class="btn btn-success custom-width">edit</a></td>
-							<td><a href="<c:url value='/delete-user-${user.id}' />" class="btn btn-danger custom-width">delete</a></td>
+							<td><a href="<c:url value='/edit-user-${user.id}' />" class="btn btn-success custom-width">修改</a></td>
+							<td><a href="<c:url value='/delete-user-${user.id}' />" class="btn btn-danger custom-width">删除</a></td>
 						</tr>
 					</c:forEach>
 		    		</tbody>
